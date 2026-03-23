@@ -1,10 +1,11 @@
 <?php
 
 use Slim\Factory\AppFactory;
+use Slim\Psr7\Factory\ResponseFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$app = AppFactory::create();
+$app = AppFactory::create(new ResponseFactory());
 
 $app->addErrorMiddleware(true, true, true);
 
