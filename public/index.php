@@ -144,7 +144,6 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
         } else {
             throw new Exception('Failed to create check');
         }
-
     } catch (Exception $e) {
         $_SESSION['flash'] = [
             'type' => 'danger',
