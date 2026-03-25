@@ -3,6 +3,7 @@
 use Slim\Factory\AppFactory;
 use Slim\Views\PhpRenderer;
 use App\Models\Url;
+use App\Models\UrlCheck;
 use App\Validators\UrlValidator;
 use App\Database;
 
@@ -53,8 +54,12 @@ $app->get('/urls/{id}', function ($request, $response, $args) use ($renderer) {
         return $response->withStatus(404);
     }
 
+    $urlCheckModel = new UrlCheck();
+    $checks = $urlCheckModel->findByUrlId($id);
+
     return $renderer->render($response, 'urls/show.phtml', [
-        'url' => $url
+        'url' => $url,
+        'checks' => $checks
     ]);
 });
 
@@ -106,6 +111,48 @@ $app->post('/urls', function ($request, $response) use ($renderer) {
     ];
 
     return $renderer->render($response, 'index.phtml');
+});
+
+// Создание проверки для URL
+$app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($renderer) {
+    $urlId = (int) $args['url_id'];
+
+    $urlModel = new Url();
+    $url = $urlModel->findById($urlId);
+
+    if (!$url) {
+        return $response->withStatus(404);
+    }
+
+    $urlCheckModel = new UrlCheck();
+
+    try {
+        $checkData = [
+            'status_code' => null,
+            'h1' => null,
+            'title' => null,
+            'description' => null
+        ];
+
+        $checkId = $urlCheckModel->create($urlId, $checkData);
+
+        if ($checkId) {
+            $_SESSION['flash'] = [
+                'type' => 'success',
+                'message' => 'Страница успешно проверена'
+            ];
+        } else {
+            throw new Exception('Failed to create check');
+        }
+
+    } catch (Exception $e) {
+        $_SESSION['flash'] = [
+            'type' => 'danger',
+            'message' => 'Произошла ошибка при проверке, не удалось подключиться'
+        ];
+    }
+
+    return $response->withHeader('Location', "/urls/$urlId")->withStatus(302);
 });
 
 $app->run();

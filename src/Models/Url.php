@@ -12,6 +12,7 @@ use Carbon\Carbon;
 class Url
 {
     private PDO $db;
+    private UrlCheck $urlCheck;
 
     /**
      * @throws Exception
@@ -19,6 +20,7 @@ class Url
     public function __construct()
     {
         $this->db = Database::getConnection();
+        $this->urlCheck = new UrlCheck();
     }
 
     /**
@@ -45,6 +47,7 @@ class Url
     }
 
     /**
+     * @param string $name
      * @return array<string, mixed>|null
      */
     public function findByName(string $name): ?array
@@ -76,5 +79,24 @@ class Url
         }
 
         return null;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findAllWithLastCheck(): array
+    {
+        $stmt = $this->db->query("SELECT * FROM urls ORDER BY created_at DESC");
+        $urls = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $result = [];
+        foreach ($urls as $url) {
+            $lastCheck = $this->urlCheck->getLastCheck((int)$url['id']);
+            $url['last_check'] = $lastCheck;
+            $result[] = $url;
+        }
+
+        /** @var array<int, array<string, mixed>> $result */
+        return $result;
     }
 }
