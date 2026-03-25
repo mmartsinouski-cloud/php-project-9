@@ -63,14 +63,23 @@ class Database
 
         // Проверяем существование таблицы urls
         $stmt = $db->query("
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_name = 'urls'
-            )
-        ");
-        $tableExists = (bool) $stmt->fetchColumn();
+        SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_name = 'urls'
+        )
+    ");
+        $urlsTableExists = (bool) $stmt->fetchColumn();
 
-        if (!$tableExists) {
+        // Проверяем существование таблицы url_checks
+        $stmt = $db->query("
+        SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_name = 'url_checks'
+        )
+    ");
+        $checksTableExists = (bool) $stmt->fetchColumn();
+        
+        if (!$urlsTableExists || !$checksTableExists) {
             $sqlFile = __DIR__ . '/../database.sql';
 
             if (!file_exists($sqlFile)) {
@@ -85,6 +94,7 @@ class Database
 
             try {
                 $db->exec($sql);
+                error_log("Database initialized successfully with schema from database.sql");
             } catch (PDOException $e) {
                 throw new Exception('Failed to initialize database: ' . $e->getMessage());
             }
