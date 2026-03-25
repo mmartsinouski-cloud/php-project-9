@@ -1,0 +1,51 @@
+<div class="container-lg mt-3">
+    <?php if (isset($_SESSION['flash'])): ?>
+        <div class="alert alert-<?= $_SESSION['flash']['type'] ?> alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_SESSION['flash']['message']) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php unset($_SESSION['flash']); ?>
+    <?php endif; ?>
+
+    <h1>Сайт: <?= htmlspecialchars($url['name'] ?? '') ?></h1>
+
+    <table class="table table-bordered table-hover mt-3" data-test="url">
+        <tbody>
+        <tr>
+            <th>ID</th>
+            <td><?= htmlspecialchars($url['id']) ?></td>
+        </tr>
+        <tr>
+            <th>Имя</th>
+            <td><?= htmlspecialchars($url['name']) ?></td>
+        </tr>
+        <tr>
+            <th>Дата создания</th>
+            <td><?= htmlspecialchars($url['created_at']) ?></td>
+        </tr>
+        <tr>
+            <th>Код ответа</th>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2 class="mt-5 mb-3">Проверки</h2>
+
+    <form action="/urls/<?= htmlspecialchars($url['id']) ?>/checks" method="post" class="mb-4">
+        <button type="submit" class="btn btn-primary">Запустить проверку</button>
+    </form>
+
+    <table class="table table-bordered table-hover" data-test="checks">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Код ответа</th>
+            <th>h1</th>
+            <th>title</th>
+            <th>description</th>
+            <th>Дата создания</th>
+        </tr>
+        </thead>
+    </table>
+</div>

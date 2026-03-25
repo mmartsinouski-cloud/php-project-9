@@ -11,7 +11,6 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 WORKDIR /app
 
 COPY . .
-
 RUN composer install
 
 CMD ["bash", "-c", "make start"]
