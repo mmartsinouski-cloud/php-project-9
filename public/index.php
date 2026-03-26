@@ -134,15 +134,18 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
         $checkData = $urlChecker->check($url['name']);
 
         // Сохраняем результаты в базу данных
-        $success = $urlCheckModel->create($urlId, $checkData);
+        $urlCheckModel->create($urlId, $checkData);
 
-        if ($success) {
+        if (!$checkData['success']) {
+            $_SESSION['flash'] = [
+                'type' => 'danger',
+                'message' => 'Произошла ошибка при проверке, код ответа: ' . $checkData['statusCode']
+            ];
+        } else {
             $_SESSION['flash'] = [
                 'type' => 'success',
                 'message' => 'Страница успешно проверена'
             ];
-        } else {
-            throw new Exception('Не удалось сохранить результаты проверки. ');
         }
     } catch (Exception $e) {
         $_SESSION['flash'] = [

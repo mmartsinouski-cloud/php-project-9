@@ -51,13 +51,12 @@ class UrlChecker
                 'h1' => $parsedData['h1'],
                 'title' => $parsedData['title'],
                 'description' => $parsedData['description'],
-                'success' => true
+                'success' => $statusCode < 400
             ];
 
         } catch (ConnectException $e) {
             throw new Exception('Не удалось подключиться к серверу. ' . $e->getMessage());
         } catch (RequestException $e) {
-            // Если есть ответ от сервера, обрабатываем
             if ($e->hasResponse()) {
                 $statusCode = $e->getResponse()->getStatusCode();
                 $h1 = null;
@@ -79,11 +78,10 @@ class UrlChecker
                     'h1' => $h1,
                     'title' => $title,
                     'description' => $description,
-                    'success' => true
+                    'success' => $statusCode < 400
                 ];
             }
 
-            // Если нет ответа от сервера - ошибка подключения
             throw new Exception('Ошибка при выполнении запроса. ' . $e->getMessage());
         } catch (GuzzleException $e) {
             throw new Exception('Ошибка при выполнении запроса. ' . $e->getMessage());
