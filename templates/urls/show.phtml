@@ -1,3 +1,18 @@
+<?php
+// Функция для обрезания строки с добавлением "..."
+function truncateString($string, $length = 100) {
+    if (empty($string)) {
+        return '';
+    }
+
+    if (mb_strlen($string) > $length) {
+        return mb_substr($string, 0, $length) . '...';
+    }
+
+    return $string;
+}
+?>
+
 <div class="container-lg mt-3">
     <?php if (isset($_SESSION['flash'])): ?>
         <div class="alert alert-<?= $_SESSION['flash']['type'] ?> alert-dismissible fade show" role="alert">
@@ -55,14 +70,17 @@
         <tbody>
         <?php foreach ($checks ?? [] as $check): ?>
             <tr>
-                <td ><?= htmlspecialchars($check['id']) ?></td>
+                <td><?= htmlspecialchars($check['id']) ?></td>
                 <td><?= htmlspecialchars($check['status_code'] ?? '') ?></td>
                 <td class="truncate">
-                    <?= htmlspecialchars($check['h1'] ?? '') ?></td>
+                    <?= htmlspecialchars(truncateString($check['h1'] ?? '')) ?>
+                </td>
                 <td class="truncate">
-                    <?= htmlspecialchars($check['title'] ?? '') ?></td>
+                    <?= htmlspecialchars(truncateString($check['title'] ?? '')) ?>
+                </td>
                 <td class="truncate">
-                    <?= htmlspecialchars($check['description'] ?? '') ?></td>
+                    <?= htmlspecialchars(truncateString($check['description'] ?? '')) ?>
+                </td>
                 <td><?= htmlspecialchars($check['created_at']) ?></td>
             </tr>
         <?php endforeach; ?>
