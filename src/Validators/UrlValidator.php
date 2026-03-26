@@ -18,14 +18,17 @@ class UrlValidator
         $v->rule('lengthMax', 'url', 255)->message('URL превышает 255 символов');
         $v->rule('url', 'url')->message('Некорректный URL');
 
-        $errors = [];
-
         if ($v->validate()) {
             return [];
         }
 
-        foreach ($v->errors() as $fieldErrors) {
-            $errors = array_merge($errors, $fieldErrors);
+        $errors = [];
+
+        // Приводим errors() к массиву, если вернулся false
+        $validationErrors = $v->errors() ?: [];
+
+        foreach ($validationErrors as $fieldErrors) {
+            $errors = array_merge($errors, (array)$fieldErrors);
         }
 
         return $errors;

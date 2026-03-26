@@ -116,7 +116,7 @@ $app->post('/urls', function ($request, $response) use ($renderer) {
 });
 
 // Создание проверки для URL
-$app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($renderer) {
+$app->post('/urls/{url_id}/checks', function ($request, $response, $args) {
     $urlId = (int) $args['url_id'];
 
     $urlModel = new Url();

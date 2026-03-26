@@ -63,20 +63,30 @@ class Database
 
         // Проверяем существование таблицы urls
         $stmt = $db->query("
-        SELECT EXISTS (
-            SELECT FROM information_schema.tables 
-            WHERE table_name = 'urls'
-        )
-    ");
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_name = 'urls'
+            )
+        ");
+
+        if ($stmt === false) {
+            throw new Exception('Не удалось выполнить запрос для проверки существования таблицы urls');
+        }
+
         $urlsTableExists = (bool) $stmt->fetchColumn();
 
         // Проверяем существование таблицы url_checks
         $stmt = $db->query("
-        SELECT EXISTS (
-            SELECT FROM information_schema.tables 
-            WHERE table_name = 'url_checks'
-        )
-    ");
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_name = 'url_checks'
+            )
+        ");
+
+        if ($stmt === false) {
+            throw new Exception('Не удалось выполнить запрос для проверки существования таблицы url_checks');
+        }
+
         $checksTableExists = (bool) $stmt->fetchColumn();
 
         if (!$urlsTableExists || !$checksTableExists) {

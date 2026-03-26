@@ -10,6 +10,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\GuzzleException;
 use Exception;
 use Symfony\Component\DomCrawler\Crawler;
+use Psr\Http\Message\ResponseInterface;
 
 class UrlChecker
 {
@@ -56,14 +57,17 @@ class UrlChecker
         } catch (ConnectException $e) {
             throw new Exception('Не удалось подключиться к серверу. ' . $e->getMessage());
         } catch (RequestException $e) {
-            if ($e->hasResponse()) {
-                $statusCode = $e->getResponse()->getStatusCode();
+            // Проверяем, есть ли ответ и он не null
+            $response = $e->hasResponse() ? $e->getResponse() : null;
+
+            if ($response instanceof ResponseInterface) {
+                $statusCode = $response->getStatusCode();
                 $h1 = null;
                 $title = null;
                 $description = null;
 
                 try {
-                    $html = (string)$e->getResponse()->getBody();
+                    $html = (string)$response->getBody();
                     $parsedData = $this->parseHtml($html);
                     $h1 = $parsedData['h1'];
                     $title = $parsedData['title'];
@@ -81,6 +85,7 @@ class UrlChecker
                 ];
             }
 
+            // Если нет ответа
             throw new Exception('Ошибка при выполнении запроса. ' . $e->getMessage());
         } catch (GuzzleException $e) {
             throw new Exception('Ошибка при выполнении запроса. ' . $e->getMessage());
