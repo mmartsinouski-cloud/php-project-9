@@ -23,12 +23,17 @@ class UrlValidator
         }
 
         $errors = [];
+        $validationErrors = $v->errors();
 
-        // Приводим errors() к массиву, если вернулся false
-        $validationErrors = $v->errors() ?: [];
-
-        foreach ($validationErrors as $fieldErrors) {
-            $errors = array_merge($errors, (array)$fieldErrors);
+        // Проверяем, что errors() вернул массив (не true)
+        if (is_array($validationErrors)) {
+            foreach ($validationErrors as $fieldErrors) {
+                if (is_array($fieldErrors)) {
+                    $errors = array_merge($errors, $fieldErrors);
+                } else {
+                    $errors[] = (string)$fieldErrors;
+                }
+            }
         }
 
         return $errors;
