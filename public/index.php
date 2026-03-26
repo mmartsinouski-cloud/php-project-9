@@ -78,7 +78,8 @@ $app->post('/urls', function ($request, $response) use ($renderer) {
             'message' => implode(', ', $errors)
         ];
 
-        return $response->withHeader('Location', '/')->withStatus(302);
+        $responseWithFlash = $renderer->render($response, 'index.phtml');
+        return $responseWithFlash->withStatus(422);
     }
 
     $urlModel = new Url();
