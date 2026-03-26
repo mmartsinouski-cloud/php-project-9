@@ -14,8 +14,7 @@
         <tr>
             <th>ID</th>
             <th>Имя</th>
-            <th>Дата создания</th>
-            <th>Дата последней проверки</th>
+            <th>Последняя проверка</th>
             <th>Код ответа</th>
         </tr>
         </thead>
@@ -28,7 +27,6 @@
                         <?= htmlspecialchars($url['name'] ?? '') ?>
                     </a>
                 </td>
-                <td><?= htmlspecialchars($url['created_at'] ?? '') ?></td>
                 <td><?= htmlspecialchars($url['last_check']['created_at'] ?? '') ?></td>
                 <td><?= htmlspecialchars($url['last_check']['status_code'] ?? '') ?></td>
             </tr>
