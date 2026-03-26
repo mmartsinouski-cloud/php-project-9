@@ -53,7 +53,6 @@ class UrlChecker
                 'description' => $parsedData['description'],
                 'success' => $statusCode < 400
             ];
-
         } catch (ConnectException $e) {
             throw new Exception('Не удалось подключиться к серверу. ' . $e->getMessage());
         } catch (RequestException $e) {
@@ -130,7 +129,6 @@ class UrlChecker
                 'title' => $title,
                 'description' => $description,
             ];
-
         } catch (Exception) {
             // В случае ошибки парсинга возвращаем пустые значения
             return [

@@ -22,7 +22,6 @@ class Url
         $this->db = Database::getConnection();
         $this->urlCheck = new UrlCheck();
     }
-    
 
     /**
      * @return array<string, mixed>|null
