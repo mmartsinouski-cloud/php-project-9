@@ -139,7 +139,7 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
         if (!$checkData['success']) {
             $_SESSION['flash'] = [
                 'type' => 'danger',
-                'message' => 'Произошла ошибка при проверке, код ответа: ' . $checkData['statusCode']
+                'message' => 'Произошла ошибка при проверке, не удалось подключиться'
             ];
         } else {
             $_SESSION['flash'] = [
