@@ -57,31 +57,34 @@ class UrlChecker
         } catch (ConnectException $e) {
             throw new Exception('Не удалось подключиться к серверу. ' . $e->getMessage());
         } catch (RequestException $e) {
-            $statusCode = $e->hasResponse() ? $e->getResponse()->getStatusCode() : 0;
-            $h1 = null;
-            $title = null;
-            $description = null;
-
+            // Если есть ответ от сервера, обрабатываем
             if ($e->hasResponse()) {
+                $statusCode = $e->getResponse()->getStatusCode();
+                $h1 = null;
+                $title = null;
+                $description = null;
+
                 try {
                     $html = (string)$e->getResponse()->getBody();
                     $parsedData = $this->parseHtml($html);
                     $h1 = $parsedData['h1'];
                     $title = $parsedData['title'];
                     $description = $parsedData['description'];
-                } catch (Exception $parseError) {
-                    //игнорируем ошибки
+                } catch (Exception) {
+                    // Игнорируем ошибки парсинга
                 }
+
+                return [
+                    'statusCode' => $statusCode,
+                    'h1' => $h1,
+                    'title' => $title,
+                    'description' => $description,
+                    'success' => true
+                ];
             }
 
-            return [
-                'statusCode' => $statusCode,
-                'h1' => $h1,
-                'title' => $title,
-                'description' => $description,
-                'success' => true
-            ];
-
+            // Если нет ответа от сервера - ошибка подключения
+            throw new Exception('Ошибка при выполнении запроса. ' . $e->getMessage());
         } catch (GuzzleException $e) {
             throw new Exception('Ошибка при выполнении запроса. ' . $e->getMessage());
         }
@@ -130,7 +133,7 @@ class UrlChecker
                 'description' => $description,
             ];
 
-        } catch (Exception $e) {
+        } catch (Exception) {
             // В случае ошибки парсинга возвращаем пустые значения
             return [
                 'h1' => null,
