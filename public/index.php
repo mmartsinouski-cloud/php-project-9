@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\UrlChecker;
 use Slim\Factory\AppFactory;
 use Slim\Views\PhpRenderer;
 use App\Models\Url;
@@ -37,7 +38,7 @@ $app->get('/', function ($request, $response) use ($renderer) {
 // Список всех URL
 $app->get('/urls', function ($request, $response) use ($renderer) {
     $urlModel = new Url();
-    $urls = $urlModel->findAll();
+    $urls = $urlModel->findAllWithLastCheck();
 
     return $renderer->render($response, 'urls/index.phtml', [
         'urls' => $urls
@@ -77,7 +78,7 @@ $app->post('/urls', function ($request, $response) use ($renderer) {
             'message' => implode(', ', $errors)
         ];
 
-        return $renderer->render($response, 'index.phtml');
+        return $response->withHeader('Location', '/')->withStatus(302);
     }
 
     $urlModel = new Url();
@@ -107,7 +108,7 @@ $app->post('/urls', function ($request, $response) use ($renderer) {
 
     $_SESSION['flash'] = [
         'type' => 'danger',
-        'message' => 'Произошла ошибка при добавлении страницы'
+        'message' => 'Произошла ошибка при добавлении страницы. '
     ];
 
     return $renderer->render($response, 'index.phtml');
@@ -125,29 +126,27 @@ $app->post('/urls/{url_id}/checks', function ($request, $response, $args) use ($
     }
 
     $urlCheckModel = new UrlCheck();
+    $urlChecker = new UrlChecker();
 
     try {
-        $checkData = [
-            'status_code' => null,
-            'h1' => null,
-            'title' => null,
-            'description' => null
-        ];
+        // Выполняем проверку сайта
+        $checkData = $urlChecker->check($url['name']);
 
-        $checkId = $urlCheckModel->create($urlId, $checkData);
+        // Сохраняем результаты в базу данных
+        $success = $urlCheckModel->create($urlId, $checkData);
 
-        if ($checkId) {
+        if ($success) {
             $_SESSION['flash'] = [
                 'type' => 'success',
                 'message' => 'Страница успешно проверена'
             ];
         } else {
-            throw new Exception('Failed to create check');
+            throw new Exception('Не удалось сохранить результаты проверки. ');
         }
     } catch (Exception $e) {
         $_SESSION['flash'] = [
             'type' => 'danger',
-            'message' => 'Произошла ошибка при проверке, не удалось подключиться'
+            'message' => 'Произошла ошибка при проверке. ' . $e->getMessage()
         ];
     }
 

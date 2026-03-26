@@ -55,28 +55,22 @@ class UrlCheck
     /**
      * @param int $urlId
      * @param array<string, mixed> $data
-     * @return int|null
+     * @return bool
      */
-    public function create(int $urlId, array $data): ?int
+    public function create(int $urlId, array $data): bool
     {
         $stmt = $this->db->prepare(
             "INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at) 
              VALUES (:url_id, :status_code, :h1, :title, :description, :created_at)"
         );
 
-        $result = $stmt->execute([
+        return $stmt->execute([
             'url_id' => $urlId,
-            'status_code' => $data['status_code'] ?? null,
-            'h1' => $data['h1'] ?? null,
-            'title' => $data['title'] ?? null,
-            'description' => $data['description'] ?? null,
+            'status_code' => isset($data['statusCode']) ? (int)$data['statusCode'] : null,
+            'h1' => $data['h1'] ? substr($data['h1'], 0, 255) : null,
+            'title' => $data['title'] ? substr($data['title'], 0, 255) : null,
+            'description' => $data['description'] ? substr($data['description'], 0, 500) : null,
             'created_at' => Carbon::now()->toDateTimeString()
         ]);
-
-        if ($result) {
-            return (int) $this->db->lastInsertId();
-        }
-
-        return null;
     }
 }

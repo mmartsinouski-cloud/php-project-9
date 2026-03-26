@@ -25,7 +25,12 @@
         </tr>
         <tr>
             <th>Код ответа</th>
-            <td></td>
+            <td>
+                <?php
+                $lastCheck = $checks[0] ?? null;
+                echo htmlspecialchars($lastCheck['status_code'] ?? '');
+                ?>
+            </td>
         </tr>
         </tbody>
     </table>

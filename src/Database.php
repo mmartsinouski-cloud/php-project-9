@@ -19,13 +19,13 @@ class Database
             $databaseUrl = $_ENV['DATABASE_URL'] ?? null;
 
             if (!$databaseUrl) {
-                throw new Exception('DATABASE_URL environment variable is not set');
+                throw new Exception('Переменная среды DATABASE_URL не установлена.');
             }
 
             $parsedUrl = parse_url($databaseUrl);
 
             if ($parsedUrl === false) {
-                throw new Exception('Invalid DATABASE_URL format: ' . $databaseUrl);
+                throw new Exception('Неверный формат DATABASE_URL:' . $databaseUrl);
             }
 
             $host = $parsedUrl['host'] ?? 'localhost';
@@ -35,7 +35,7 @@ class Database
             $password = isset($parsedUrl['pass']) ? urldecode($parsedUrl['pass']) : '';
 
             if (empty($dbname)) {
-                throw new Exception('Database name not specified in DATABASE_URL');
+                throw new Exception('Имя базы данных не указано в DATABASE_URL');
             }
 
             $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
@@ -47,7 +47,7 @@ class Database
                     PDO::ATTR_EMULATE_PREPARES => false,
                 ]);
             } catch (PDOException $e) {
-                throw new Exception('Database connection failed: ' . $e->getMessage());
+                throw new Exception('Не удалось подключиться к базе данных. ' . $e->getMessage());
             }
         }
 
@@ -78,25 +78,25 @@ class Database
         )
     ");
         $checksTableExists = (bool) $stmt->fetchColumn();
-        
+
         if (!$urlsTableExists || !$checksTableExists) {
             $sqlFile = __DIR__ . '/../database.sql';
 
             if (!file_exists($sqlFile)) {
-                throw new Exception('Database schema file not found: ' . $sqlFile);
+                throw new Exception('Файл схемы базы данных не найден. ' . $sqlFile);
             }
 
             $sql = file_get_contents($sqlFile);
 
             if ($sql === false) {
-                throw new Exception('Failed to read database schema file');
+                throw new Exception('Не удалось прочитать файл схемы базы данных. ');
             }
 
             try {
                 $db->exec($sql);
-                error_log("Database initialized successfully with schema from database.sql");
+                error_log("База данных успешно инициализирована со схемой из файла database.sql.");
             } catch (PDOException $e) {
-                throw new Exception('Failed to initialize database: ' . $e->getMessage());
+                throw new Exception('Не удалось инициализировать базу данных. ' . $e->getMessage());
             }
         }
     }

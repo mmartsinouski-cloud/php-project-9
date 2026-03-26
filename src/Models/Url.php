@@ -22,17 +22,7 @@ class Url
         $this->db = Database::getConnection();
         $this->urlCheck = new UrlCheck();
     }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    public function findAll(): array
-    {
-        $stmt = $this->db->query("SELECT * FROM urls ORDER BY created_at DESC");
-        /** @var array<int, array<string, mixed>> $result */
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
-    }
+    
 
     /**
      * @return array<string, mixed>|null
@@ -93,10 +83,10 @@ class Url
         foreach ($urls as $url) {
             $lastCheck = $this->urlCheck->getLastCheck((int)$url['id']);
             $url['last_check'] = $lastCheck;
+            $url['status_code'] = $lastCheck['status_code'] ?? null;
             $result[] = $url;
         }
 
-        /** @var array<int, array<string, mixed>> $result */
         return $result;
     }
 }
