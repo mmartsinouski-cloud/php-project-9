@@ -1,3 +1,7 @@
+<?php
+use App\Helpers\StringHelper;
+?>
+
 <div class="container-lg mt-3">
     <?php if (isset($_SESSION['flash'])): ?>
         <div class="alert alert-<?= $_SESSION['flash']['type'] ?> alert-dismissible fade show" role="alert">
@@ -57,9 +61,9 @@
             <tr>
                 <td><?= htmlspecialchars($check['id']) ?></td>
                 <td><?= htmlspecialchars($check['status_code'] ?? '') ?></td>
-                <td><?= htmlspecialchars($check['h1'] ?? '') ?></td>
-                <td><?= htmlspecialchars($check['title'] ?? '') ?></td>
-                <td><?= htmlspecialchars($check['description'] ?? '') ?></td>
+                <td><?= htmlspecialchars(StringHelper::truncate($check['h1'] ?? null, 255)) ?></td>
+                <td><?= htmlspecialchars(StringHelper::truncate($check['title'] ?? null, 255)) ?></td>
+                <td><?= htmlspecialchars(StringHelper::truncate($check['description'] ?? null, 500)) ?></td>
                 <td><?= htmlspecialchars($check['created_at']) ?></td>
             </tr>
         <?php endforeach; ?>
